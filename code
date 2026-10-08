@@ -1,0 +1,112 @@
+install.packages(c("qpdf", "pdftools"), type = "binary")
+library(pdftools)
+
+pdf_path <- file.choose()
+pages <- pdftools::pdf_text(pdf_path)
+
+cat(pages[20])
+
+# Oregon Death with Dignity Act data, 1998–2025
+# Source: 2025 annual report, Table 2
+
+oregon <- data.frame(
+  year = 1998:2025,
+  
+  prescriptions = c(
+    24, 33, 39, 44, 58, 68, 60, 65, 65, 85,
+    88, 95, 97, 114, 116, 121, 155, 218, 204, 218,
+    261, 296, 373, 384, 432, 561, 609, 637
+  ),
+  
+  deaths = c(
+    16, 27, 27, 21, 38, 42, 37, 38, 46, 49,
+    60, 59, 65, 71, 85, 73, 105, 135, 139, 158,
+    178, 193, 259, 255, 305, 389, 421, 400
+  ),
+  
+  physicians = c(
+    NA, NA, 22, 33, 33, 42, 40, 40, 41, 46,
+    60, 64, 59, 62, 62, 62, 83, 106, 101, 92,
+    108, 113, 142, 132, 144, 165, 132, 155
+  )
+)
+
+# View data
+View(oregon)
+
+# Check totals against the report
+sum(oregon$prescriptions)  # 5520
+sum(oregon$deaths)         # 3691
+
+# Save data
+write.csv(oregon, "oregon_dwda.csv", row.names = FALSE)
+
+# Plot annual prescription recipients
+plot(
+  oregon$year, oregon$prescriptions,
+  type = "l",
+  col = "blue",
+  lwd = 2,
+  ylim = c(0, 700),
+  xlab = "Year",
+  ylab = "Number of people",
+  main = "Oregon Death with Dignity Act"
+)
+
+# Add annual reported deaths
+lines(
+  oregon$year, oregon$deaths,
+  col = "red",
+  lwd = 2
+)
+
+# Add legend
+legend(
+  "topleft",
+  legend = c("Prescription recipients", "Reported deaths"),
+  col = c("blue", "red"),
+  lty = 1,
+  lwd = 2,
+  bty = "n"
+)
+cat(pages[15])
+
+
+
+
+# Underlying illnesses among reported DWDA deaths in 2025
+illness_2025 <- data.frame(
+  illness = c(
+    "Cancer",
+    "Neurological disease",
+    "Heart/circulatory disease",
+    "Respiratory disease",
+    "Endocrine/metabolic disease",
+    "Genitourinary disease",
+    "Gastrointestinal disease",
+    "Infectious disease",
+    "Other illnesses"
+  ),
+  
+  count = c(245, 56, 45, 26, 12, 4, 3, 2, 7)
+)
+
+illness_2025$percent <- round(
+  illness_2025$count / 400 * 100, 1
+)
+
+View(illness_2025)
+
+write.csv(
+  illness_2025,
+  "oregon_illness_2025.csv",
+  row.names = FALSE
+)
+
+
+
+
+
+
+
+
